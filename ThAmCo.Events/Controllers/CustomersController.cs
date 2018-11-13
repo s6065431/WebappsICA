@@ -32,8 +32,11 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var customer = await _context.Customers
+            var customer = await _context.Customers             
+                .Include(b => b.Bookings)
+                .ThenInclude(e => e.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
+           
             if (customer == null)
             {
                 return NotFound();
