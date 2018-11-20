@@ -4,10 +4,10 @@
     {
         public string EventTypeId { get; set; }
 
-        public EventType EventType { get; set; }
+        public EventTypesDto EventType { get; set; }
 
         public string VenueCode { get; set; }
 
-        public Venue Venue { get; set; }
+        public VenuesDto Venue { get; set; }
     }
 }
