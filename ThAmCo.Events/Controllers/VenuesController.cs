@@ -16,23 +16,6 @@ namespace ThAmCo.Events.Controllers
         // Availability?eventType=WED&beginDate=2018-11-20&endDate=2018-11-30
         public async Task<IActionResult> Index()
         {
-            var venues = new List<AvailabilityDto>().AsEnumerable();
-
-            HttpClient client = new HttpClient
-            {
-                BaseAddress = new System.Uri("http://localhost:23652/")
-            };
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-
-            HttpResponseMessage response = await client.GetAsync("api/Availability?eventType=X&beginDate=X&endDate=X");
-            if (response.IsSuccessStatusCode)
-            {
-                venues = await response.Content.ReadAsAsync<IEnumerable<AvailabilityDto>>();
-            }
-            else
-            {
-                Debug.WriteLine("Index received a bad response from the web service. ");
-            }
 
             return View(venues);
         }
