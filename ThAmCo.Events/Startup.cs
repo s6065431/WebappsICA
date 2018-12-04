@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ThAmCo.Events.Data;
+using ThAmCo.Events.Services;
 
 namespace ThAmCo.Events
 {
@@ -30,13 +31,16 @@ namespace ThAmCo.Events
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddSingleton<VenuesClient, VenuesClient>();
+            //services.AddSingleton<VenuesClient2, VenuesClient2>();
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddDbContext<EventsDbContext>(options =>
             {
                 var cs = Configuration.GetConnectionString("EventsSqlConnection");
                 options.UseSqlServer(cs);
-            });                
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

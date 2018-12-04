@@ -6,21 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ThAmCo.Events.Data;
+using ThAmCo.Events.Services;
 
 namespace ThAmCo.Events.Controllers
 {
     public class EventsController : Controller
     {
         private readonly EventsDbContext _context;
+        private readonly VenuesClient _venuesClient;
 
-        public EventsController(EventsDbContext context)
+        public EventsController(EventsDbContext context, VenuesClient venuesClient)
         {
             _context = context;
+            _venuesClient = venuesClient;
         }
 
         // GET: Events
         public async Task<IActionResult> Index()
         {
+            var avails = _venuesClient.GetAvailablities("");
             return View(await _context.Events.Include(b => b.Bookings).ToListAsync());
         }
 
@@ -32,7 +36,7 @@ namespace ThAmCo.Events.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events              
+            var @event = await _context.Events
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {
