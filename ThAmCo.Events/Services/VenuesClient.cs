@@ -30,12 +30,14 @@ namespace ThAmCo.Events.Services
                 BaseAddress = new System.Uri("http://localhost:23652/")
             };
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-            var url = $"api/Availability?eventType=" + @event.TypeId + "&beginDate=" + @event.Date + "&endDate=" + @event.Date.Add(@event.Duration.Value).ToString("yyyy-MM-dd");
+            var url = $"api/Availability?eventType=" + @event.TypeId + "&beginDate=" + @event.Date.ToString("yyyy-MM-dd") + "&endDate=" + @event.Date.Add(@event.Duration.Value).ToString("yyyy-MM-dd");
             HttpResponseMessage response = client.GetAsync(url).Result;
+
             if (response.IsSuccessStatusCode)
             {
                 venues = response.Content.ReadAsAsync<IEnumerable<AvailabilityDto>>().Result;
             }
+
             else
             {
                 Debug.WriteLine("Index received a bad response from the web service. ");

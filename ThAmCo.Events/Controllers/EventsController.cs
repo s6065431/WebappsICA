@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ThAmCo.Events.Data;
+using ThAmCo.Events.Models;
 using ThAmCo.Events.Services;
 
 namespace ThAmCo.Events.Controllers
@@ -24,7 +26,7 @@ namespace ThAmCo.Events.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            var avails = _venuesClient.GetAvailablities("");
+            
             return View(await _context.Events.Include(b => b.Bookings).ToListAsync());
         }
 
@@ -42,7 +44,23 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
+            var avails = _venuesClient.GetAvailablities(@event);
 
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new System.Uri("http://localhost:22263");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            //var availabilities = new AvailabilityDto
+            //{
+                
+            //    Date = eventDate,
+            //    Duration
+            //    VenueCode = Id,
+            //    Venue = Title,
+            //    Title
+            //    TypeID
+            //}
+            //HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", availabilities);
             return View(@event);
         }
 
