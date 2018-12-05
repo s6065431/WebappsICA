@@ -50,17 +50,13 @@ namespace ThAmCo.Events.Controllers
             client.BaseAddress = new System.Uri("http://localhost:22263");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
-            //var availabilities = new AvailabilityDto
+            //var reservation = new ReservationViewModel
             //{
-                
-            //    Date = eventDate,
-            //    Duration
-            //    VenueCode = Id,
-            //    Venue = Title,
-            //    Title
-            //    TypeID
+            //    EventDate = @event.Date,
+            //    VenueCode = ,
+            //    StaffId = id,
             //}
-            //HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", availabilities);
+            //HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", reservation);
             return View(@event);
         }
 
