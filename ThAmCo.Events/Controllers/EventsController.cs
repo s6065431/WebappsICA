@@ -44,19 +44,7 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
-            var avails = _venuesClient.GetAvailablities(@event);
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new System.Uri("http://localhost:22263");
-            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-
-            //var reservation = new ReservationViewModel
-            //{
-            //    EventDate = @event.Date,
-            //    VenueCode = ,
-            //    StaffId = id,
-            //}
-            //HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", reservation);
             return View(@event);
         }
 
@@ -83,7 +71,7 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Events/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id )
         {
             if (id == null)
             {
@@ -95,6 +83,18 @@ namespace ThAmCo.Events.Controllers
             {
                 return NotFound();
             }
+            var avails = _venuesClient.GetAvailablities(@event);
+
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new System.Uri("http://localhost:22263");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+            var reservation = new ReservationViewModel
+            {
+                EventDate = @event.Date,
+                VenueCode = @event.VenueName
+            };
+            HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", reservation);
             return View(@event);
         }
 
