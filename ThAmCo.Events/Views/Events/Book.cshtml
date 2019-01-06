@@ -1,0 +1,11 @@
+﻿@model IEnumerable<ThAmCo.Events.Models.VenuesViewModel>
+
+@{
+    ViewData["Title"] = "Book";
+}
+
+@Html.DropDownList("Venues",
+    new SelectList(Enum.GetValues(typeof(VenuesDto))),
+    "Select Venue")
+
+<h2>Book</h2>

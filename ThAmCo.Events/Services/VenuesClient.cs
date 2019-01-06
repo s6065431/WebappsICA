@@ -47,5 +47,28 @@ namespace ThAmCo.Events.Services
             return venues;
         }
 
+        public async Task<IEnumerable<ReservationPostDto>> PostAvailabilities(Event @event)
+        {
+            
+
+            HttpClient client = new HttpClient
+            {
+                BaseAddress = new System.Uri("http://localhost:23652/")
+            };
+
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+
+            var reservations = new List<ReservationPostDto>().AsEnumerable();
+            {
+
+            };
+
+            HttpResponseMessage response = await client.PostAsJsonAsync("api/reservations", reservations);
+            return reservations;
+        }
+
+
+
     }
 }
