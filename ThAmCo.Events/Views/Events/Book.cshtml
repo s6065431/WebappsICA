@@ -14,14 +14,15 @@
 {
     <table class="table">
         <thead>
-        <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Date</th>
-            <th>Capacity</th>
-            <th>CostPerHour</th>
-        </tr>
+            <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th>Description</th>
+                <th>Date</th>
+
+                <th>Cost Per Hour</th>
+            </tr>
         </thead>
         <tbody>
         @foreach (var item in Model.AvailableVenues)
@@ -33,20 +34,24 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.Capacity)
                 </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+
                 <td>
                     @Html.DisplayFor(modelItem => item.CostPerHour)
                 </td>
                 <td>
-                    @Html.ActionLink("Book", "BookVenueConfirm", new { eventId = Model.EventId, venueCode = item.Code})
+                    @Html.ActionLink("Book", "BookVenuePost", new { eventId = Model.EventId, venueCode = item.Code })
                 </td>
             </tr>
         }

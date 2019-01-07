@@ -54,7 +54,7 @@ namespace ThAmCo.Events.Controllers
             return View();
         }
         // GET: Events/Book
-        public async Task<IActionResult> BookAsync(int? id)
+        public async Task<IActionResult> Book(int? id)
         {
             if (id == null)
             {
@@ -78,8 +78,81 @@ namespace ThAmCo.Events.Controllers
 
             };
 
-            return View(bookingViewModel);
+            return View("Book", bookingViewModel);
         }
+
+        //public async Task<IActionResult> BookVenueConfirm([FromQuery] int eventId, [FromQuery] string venueCode)
+        //{
+        //    Event @event = await _context.Events.FindAsync(eventId);
+
+        //    if (@event == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    VenuesViewModel postBook = new VenuesViewModel
+        //    {
+        //        EventId = eventId,
+        //        EventTitle = @event.Title,
+        //        VenueCode = venueCode,
+        //        VenueName = @event.VenueName
+        //    };
+        //    return View(postBook);
+        //}
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+
+        public async Task<IActionResult> BookVenuePost([Bind("EventId", "VenueCode")] VenuesViewModel postVenue)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var @event = await _context.Events.FindAsync(postVenue.EventId);
+                    if (@event == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (@event.ReservationRef != null)
+                    {
+                        var r = await _venuesClient.DeleteReservation(@event);
+                    }
+
+                    ReservationPostDto postReservation = new ReservationPostDto
+                    {
+                        VenueCode = postVenue.VenueCode,
+                        EventDate = @event.Date,
+                    };
+                    var reserveVenue = await _venuesClient.AddReservation(postReservation);
+
+                    @event.ReservationRef = reserveVenue.Reference;
+                    @event.VenueName = reserveVenue.VenueName;
+
+                    _context.Update(@event);
+                    await _context.SaveChangesAsync();
+                }
+                catch
+                {
+                    if (!Event(postVenue.EventId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(Index));
+
+            }
+
+            return View(postVenue);
+        }
+
+        
         // POST: Events/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
