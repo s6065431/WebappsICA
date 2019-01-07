@@ -53,7 +53,33 @@ namespace ThAmCo.Events.Controllers
         {
             return View();
         }
+        // GET: Events/Book
+        public async Task<IActionResult> BookAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var @event = await _context.Events.FindAsync(id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            var avails =  _venuesClient.GetAvailablities(@event);
+
+            var bookingViewModel = new VenuesViewModel
+            {
+                EventId = @event.Id,
+                AvailableVenues = avails,
+                VenueName = @event.VenueName
+
+            };
+
+            return View(bookingViewModel);
+        }
         // POST: Events/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.

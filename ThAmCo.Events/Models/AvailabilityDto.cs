@@ -9,17 +9,18 @@ namespace ThAmCo.Events.Models
 {
     public class AvailabilityDto
     {
+        public string Code { get; set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public int Capacity { get; set; }
+
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
 
-        public string VenueCode { get; set; }
-
-        [ForeignKey(nameof(VenueCode))]
-        public VenuesDto Venue { get; set; }
-
         [Range(0.0, Double.MaxValue)]
         public double CostPerHour { get; set; }
-
-        public ReservationDto Reservation { get; set; }
     }
 }

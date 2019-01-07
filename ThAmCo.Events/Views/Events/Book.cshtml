@@ -1,11 +1,63 @@
-﻿@model IEnumerable<ThAmCo.Events.Models.VenuesViewModel>
+﻿@model ThAmCo.Events.Models.VenuesViewModel
 
 @{
-    ViewData["Title"] = "Book";
+    ViewData["Title"] = "BookVenue";
 }
 
-@Html.DropDownList("Venues",
-    new SelectList(Enum.GetValues(typeof(VenuesDto))),
-    "Select Venue")
+<h2>Book a venue</h2>
 
-<h2>Book</h2>
+@if (Model.VenueName != null)
+{
+    <h3>Current venue: @Model.VenueName</h3>
+}
+@if (Model.AvailableVenues.Any())
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Capacity</th>
+            <th>CostPerHour</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.AvailableVenues)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Capacity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CostPerHour)
+                </td>
+                <td>
+                    @Html.ActionLink("Book", "BookVenueConfirm", new { eventId = Model.EventId, venueCode = item.Code})
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No venues available for the event dates</p>
+}
+
+<div>
+    <a asp-action="Index">Back to list</a>
+</div>

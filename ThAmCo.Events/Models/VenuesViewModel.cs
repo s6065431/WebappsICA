@@ -9,18 +9,17 @@ namespace ThAmCo.Events.Models
 {
     public class VenuesViewModel
     {
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+       
+
+        public IEnumerable<AvailabilityDto> AvailableVenues { get; set; }
 
         public string VenueCode { get; set; }
 
-        [ForeignKey(nameof(VenueCode))]
-        public VenuesDto Venue { get; set; }
+        public string VenueName { get; set; }
 
-        [Range(0.0, Double.MaxValue)]
-        public double CostPerHour { get; set; }
+        public string EventTitle { get; set; }
 
-        public ReservationDto Reservation { get; set; }
-
+        public int EventId { get; set; }
     }
+
 }
