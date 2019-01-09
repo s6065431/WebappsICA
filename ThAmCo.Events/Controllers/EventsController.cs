@@ -103,7 +103,7 @@ namespace ThAmCo.Events.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> BookVenuePost([Bind("EventId", "VenueCode")] VenuesViewModel postVenue)
+        public async Task<IActionResult> BookVenuePost([Bind("EventId,VenueCode")] VenuesViewModel postVenue)
         {
             if (ModelState.IsValid)
             {
@@ -123,6 +123,7 @@ namespace ThAmCo.Events.Controllers
                     ReservationPostDto postReservation = new ReservationPostDto
                     {
                         VenueCode = postVenue.VenueCode,
+                        StaffId = "s",
                         EventDate = @event.Date,
                     };
                     var reserveVenue = await _venuesClient.AddReservation(postReservation);

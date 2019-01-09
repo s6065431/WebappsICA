@@ -44,7 +44,7 @@ namespace ThAmCo.Events.Services
         private async Task<T> HttpDeleteAsync<T>(string v)
         {
             HttpClient client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri("http://localhost:22263");
+            client.BaseAddress = new Uri("http://localhost:23652");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage responseMessage = await client.DeleteAsync(v);
@@ -55,6 +55,8 @@ namespace ThAmCo.Events.Services
 
         public async Task<ReservationGetDto> AddReservation(ReservationPostDto post)
         {
+
+
             return await HttpPostAsync<ReservationPostDto, ReservationGetDto>("/api/reservations/", post);
         }
 
@@ -98,7 +100,7 @@ namespace ThAmCo.Events.Services
         public async Task<T> HttpGetAsync<T>(string uri)
         {
             HttpClient client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri("http://localhost:22263");
+            client.BaseAddress = new Uri("http://localhost:23652");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage responseMessage = await client.GetAsync(uri);
@@ -110,7 +112,7 @@ namespace ThAmCo.Events.Services
         public async Task<B> HttpPostAsync<T, B>(string uri, T content)
         {
             HttpClient client = _httpClientFactory.CreateClient();
-            client.BaseAddress = new Uri("http://localhost:22263");
+            client.BaseAddress = new Uri("http://localhost:23652");
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
 
             HttpResponseMessage responseMessage = await client.PostAsJsonAsync(uri, content);
