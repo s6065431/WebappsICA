@@ -38,7 +38,8 @@ namespace ThAmCo.Events.Data.Migrations
                     Date = table.Column<DateTime>(nullable: false),
                     Duration = table.Column<TimeSpan>(nullable: true),
                     TypeId = table.Column<string>(fixedLength: true, maxLength: 3, nullable: false),
-                    VenueName = table.Column<string>(nullable: true)
+                    VenueName = table.Column<string>(nullable: true),
+                    ReservationRef = table.Column<string>(fixedLength: true, maxLength: 13, nullable: true),
                 },
                 constraints: table =>
                 {

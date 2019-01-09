@@ -1,0 +1,27 @@
+﻿@model ThAmCo.Events.Models.VenuesViewModel
+
+@{
+    ViewData["Title"] = "BookVenuePost";
+}
+
+<h2>Confirm your booking</h2>
+
+@{
+    ViewData["Title"] = "BookVenuePost";
+}
+
+<h2>Confirm venue booking</h2>
+
+<div>
+    <hr />
+    <h4>Are you sure you want to book @Model.VenueName for @Model.EventTitle?</h4>
+
+    <form asp-action="BookVenuePost">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="VenueCode" />
+        <input type="hidden" asp-for="EventId" />
+
+        <input type="button" value="Cancel" class="btn btn-default" onclick="location.href='@Url.Action("BookVenue", "Events", new { id = Model.EventId})'" />
+        <input type="submit" value="Book" class="btn btn-default" />
+    </form>
+</div>

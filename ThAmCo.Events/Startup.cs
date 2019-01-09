@@ -32,6 +32,7 @@ namespace ThAmCo.Events
             });
 
             services.AddSingleton<VenuesClient, VenuesClient>();
+            services.AddHttpClient();
             //services.AddSingleton<VenuesClient2, VenuesClient2>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

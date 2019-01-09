@@ -9,6 +9,8 @@ namespace ThAmCo.Events.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<GuestBooking> Guests { get; set; }
+        public DbSet<Staff> Staff { get; set; }
+        public DbSet<Staffing> Staffing { get; set; }
 
         private IHostingEnvironment HostEnv { get; }
 
@@ -46,6 +48,14 @@ namespace ThAmCo.Events.Data
                    .Property(e => e.TypeId)
                    .IsFixedLength();
 
+            builder.Entity<Staff>()
+                .HasMany(s => s.Staffing)
+                .WithOne(s => s.Staff)
+                .HasForeignKey(s => s.StaffId);
+
+
+            builder.Entity<Staffing>()
+                .HasKey(s => new { s.StaffId, s.EventId });
             // seed data for debug / development testing
             if (HostEnv != null && HostEnv.IsDevelopment())
             {
@@ -56,8 +66,8 @@ namespace ThAmCo.Events.Data
                 );
 
                 builder.Entity<Event>().HasData(
-                    new Event { Id = 1, Title = "Bob's Big 50", Date = new DateTime(2016, 4, 12), Duration = new TimeSpan(6, 0, 0), TypeId = "PTY" },
-                    new Event { Id = 2, Title = "Best Wedding Yet", Date = new DateTime(2018, 12, 1), Duration = new TimeSpan(12, 0, 0), TypeId = "WED" }
+                    new Event { Id = 1, Title = "Bob's Big 50", Date = new DateTime(2016, 4, 12), Duration = new TimeSpan(6, 0, 0), TypeId = "PTY", ReservationRef = "DHIUOPUYETANB" },
+                    new Event { Id = 2, Title = "Best Wedding Yet", Date = new DateTime(2018, 12, 1), Duration = new TimeSpan(12, 0, 0), TypeId = "WED", ReservationRef = "ADHIUOPLMUYTE"}
                 );
 
                 builder.Entity<GuestBooking>().HasData(
@@ -66,6 +76,23 @@ namespace ThAmCo.Events.Data
                     new GuestBooking { CustomerId = 1, EventId = 2, Attended = false },
                     new GuestBooking { CustomerId = 3, EventId = 2, Attended = false }
                 );
+
+                builder.Entity<Staff>().HasData(
+
+                    new Staff {Id = 1, FirstName = "Bob", Surname = "Marley", FirstAidQualified = true},
+                    new Staff {Id = 2, FirstName = "Jim", Surname = "Jones", FirstAidQualified = false},
+                    new Staff {Id = 3, FirstName = "Billy", Surname = "Joel", FirstAidQualified = true},
+                    new Staff {Id = 4, FirstName = "Noel", Surname = "Left", FirstAidQualified = false}
+                );
+
+                builder.Entity<Staffing>().HasData(
+
+                    new Staffing { StaffId= 1, EventId=1 },
+                    new Staffing { StaffId = 2, EventId = 1},
+                    new Staffing { StaffId = 3, EventId = 2},
+                    new Staffing { StaffId = 4, EventId = 2 }
+                );
+
             }
         }
     }

@@ -20,7 +20,6 @@
                 <th>Capacity</th>
                 <th>Description</th>
                 <th>Date</th>
-
                 <th>Cost Per Hour</th>
             </tr>
         </thead>
@@ -51,7 +50,7 @@
                     @Html.DisplayFor(modelItem => item.CostPerHour)
                 </td>
                 <td>
-                    @Html.ActionLink("Book", "BookVenuePost", new { eventId = Model.EventId, venueCode = item.Code })
+                    @Html.ActionLink("Book this venue", "BookVenuePost", new { eventId = Model.EventId, venueCode = item.Code })
                 </td>
             </tr>
         }

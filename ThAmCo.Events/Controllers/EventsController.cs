@@ -81,24 +81,24 @@ namespace ThAmCo.Events.Controllers
             return View("Book", bookingViewModel);
         }
 
-        //public async Task<IActionResult> BookVenueConfirm([FromQuery] int eventId, [FromQuery] string venueCode)
-        //{
-        //    Event @event = await _context.Events.FindAsync(eventId);
+        public async Task<IActionResult> BookVenuePost([FromQuery] int eventId, [FromQuery] string venueCode)
+        {
+            Event @event = await _context.Events.FindAsync(eventId);
 
-        //    if (@event == null)
-        //    {
-        //        return NotFound();
-        //    }
+            if (@event == null)
+            {
+                return NotFound();
+            }
 
-        //    VenuesViewModel postBook = new VenuesViewModel
-        //    {
-        //        EventId = eventId,
-        //        EventTitle = @event.Title,
-        //        VenueCode = venueCode,
-        //        VenueName = @event.VenueName
-        //    };
-        //    return View(postBook);
-        //}
+            VenuesViewModel postBook = new VenuesViewModel
+            {
+                EventId = eventId,
+                EventTitle = @event.Title,
+                VenueCode = venueCode,
+                VenueName = @event.VenueName
+            };
+            return View(postBook);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -135,7 +135,7 @@ namespace ThAmCo.Events.Controllers
                 }
                 catch
                 {
-                    if (!Event(postVenue.EventId))
+                    if (!EventExists(postVenue.EventId))
                     {
                         return NotFound();
                     }

@@ -21,5 +21,10 @@ namespace ThAmCo.Events.Data
         public List<GuestBooking> Bookings { get; set; }
 
         public string VenueName { get; set; }
+
+        [MinLength(13), MaxLength(13)]
+        public string ReservationRef { get; set; }
+
+        public List<Staffing> Staffing { get; set; }
     }
 }
