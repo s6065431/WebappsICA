@@ -27,7 +27,10 @@ namespace ThAmCo.Events.Controllers
         public async Task<IActionResult> Index()
         {
             
-            return View(await _context.Events.Include(b => b.Bookings).ToListAsync());
+            return View(await _context.Events.Include(b => b.Bookings)
+                .Include(e => e.Staffing)
+                .ThenInclude(s => s.Staff)
+                .ToListAsync());
         }
 
         // GET: Events/Details/5
@@ -75,13 +78,12 @@ namespace ThAmCo.Events.Controllers
                 EventId = @event.Id,
                 AvailableVenues = avails,
                 VenueName = @event.VenueName
-
             };
 
-            return View("Book", bookingViewModel);
+            return View(bookingViewModel);
         }
 
-        public async Task<IActionResult> BookVenuePost([FromQuery] int eventId, [FromQuery] string venueCode)
+        public async Task<IActionResult> BookVenuePost([FromQuery] int eventId, [FromQuery] string venueCode, [FromQuery] string venueName)
         {
             Event @event = await _context.Events.FindAsync(eventId);
 
@@ -95,7 +97,7 @@ namespace ThAmCo.Events.Controllers
                 EventId = eventId,
                 EventTitle = @event.Title,
                 VenueCode = venueCode,
-                VenueName = @event.VenueName
+                VenueName = venueName
             };
             return View(postBook);
         }
@@ -103,7 +105,7 @@ namespace ThAmCo.Events.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> BookVenuePost([Bind("EventId,VenueCode")] VenuesViewModel postVenue)
+        public async Task<IActionResult> BookVenuePost([Bind("EventId,VenueCode,VenueName")] VenuesViewModel postVenue)
         {
             if (ModelState.IsValid)
             {
@@ -129,7 +131,7 @@ namespace ThAmCo.Events.Controllers
                     var reserveVenue = await _venuesClient.AddReservation(postReservation);
 
                     @event.ReservationRef = reserveVenue.Reference;
-                    @event.VenueName = reserveVenue.VenueName;
+                    @event.VenueName = postVenue.VenueName;
 
                     _context.Update(@event);
                     await _context.SaveChangesAsync();
@@ -260,6 +262,16 @@ namespace ThAmCo.Events.Controllers
             _context.Events.Remove(@event);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Staffing(int id)
+        {
+            var @event = await _context.Events
+                .Include(e => e.Staffing)
+                .ThenInclude(s => s.Staff)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            return View(@event);
         }
 
         private bool EventExists(int id)

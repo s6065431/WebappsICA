@@ -1,0 +1,51 @@
+﻿@model ThAmCo.Events.Data.Event
+
+@{
+    ViewData["Title"] = "Staffing";
+}
+
+<h2>@Model.Title Staffing</h2>
+
+<p>
+    <a asp-controller="Staffing" asp-action="Create">Create New</a>
+</p>
+<div class="collapse alert alert-danger" id="error-alert"></div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Staff
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Staffing) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Staff.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Event.Title)
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", "Staffing", new { eventId = item.EventId, staffId = item.StaffId })
+            </td>
+            </tr>
+            }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            if ('@Model.Staffing.All(s => !s.Staff.FirstAidQualified)' == 'True') {
+                $('#error-alert').html('@Model.Title Has No First Aider').show();
+            }
+        });
+    </script>
+}

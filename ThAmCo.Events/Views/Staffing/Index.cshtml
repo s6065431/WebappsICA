@@ -18,12 +18,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Event)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EventId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StaffId)
-            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -31,16 +26,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Staff.Id)
+                @Html.DisplayFor(modelItem => item.Staff.FullName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Event.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem =>item.Event.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Staff.Id)
             </td>
             <td>
                 @Html.ActionLink("Delete", "Delete", new { eventId = item.EventId, staffId = item.StaffId })

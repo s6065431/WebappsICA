@@ -25,8 +25,12 @@
                 @Html.DisplayNameFor(model => model.TypeId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Bookings)
+                Attendees
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.VenueName)
+            </th>
+
             <th></th>
         </tr>
     </thead>
@@ -48,12 +52,55 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Bookings.Count)
             </td>
+
+            <td>
+                @if (item.VenueName == null)
+                {
+                    <p>No Venue Booked</p>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.VenueName)
+                }
+            </td>
+
+
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                <a asp-action="Book" asp-route-id="@item.Id">Book Venue</a> |
+                <a asp-action="Staffing" asp-route-id="@item.Id">Staffing for Event</a>
             </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="collapse alert alert-danger" id='error-alert-@item.Id'></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
 }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        function warn(eId) {
+            $('#error-alert-' + eId).text("First aider required!").show();
+        }
+
+        $(document).ready(function () {
+            var eId = '@String.Join(",", Model.Where(e => e.Staffing.All(s => !s.Staff.FirstAidQualified)).Select(e => e.Id).ToArray())';
+            if (eId != "") {
+                eId.split(",").forEach(warn);
+            }
+        });
+    </script>
+
+
+}

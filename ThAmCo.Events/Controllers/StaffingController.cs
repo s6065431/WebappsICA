@@ -19,9 +19,11 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Staffings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? eventId)
         {
-            var eventsDbContext = _context.Staffing.Include(s => s.Event).Include(s => s.Staff);
+            var eventsDbContext = _context.Staffing.Include(s => s.Event)
+                .Include(s => s.Staff)
+                .Where(s => eventId == null ||  s.EventId == eventId);
             return View(await eventsDbContext.ToListAsync());
         }
 
@@ -79,9 +81,11 @@ namespace ThAmCo.Events.Controllers
         public async Task<IActionResult> DeleteConfirmed(int eventId, int staffId)
         {
             var staffing = await _context.Staffing.FirstOrDefaultAsync(m => m.StaffId == staffId && m.EventId == eventId);
+
             _context.Staffing.Remove(staffing);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return RedirectToAction("Index", "Events");
         }
 
         private bool StaffingExists(int id)
