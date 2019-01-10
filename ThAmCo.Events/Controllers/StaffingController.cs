@@ -32,16 +32,14 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Staffings/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title");
-            ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Id");
+            ViewData["StaffId"] = new SelectList(await _context.Staff.ToListAsync(), "Id", "Id");
             return View();
         }
 
         // POST: Staffings/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("StaffId,EventId")] Staffing staffing)
@@ -53,7 +51,7 @@ namespace ThAmCo.Events.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title", staffing.EventId);
-            ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Id", staffing.StaffId);
+            ViewData["StaffId"] = new SelectList(await _context.Staff.ToListAsync(), "Id", "Id", staffing.StaffId);
             return View(staffing);
         }
 
