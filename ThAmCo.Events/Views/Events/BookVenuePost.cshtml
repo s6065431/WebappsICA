@@ -22,7 +22,7 @@
         <input type="hidden" asp-for="VenueCode" />
         <input type="hidden" asp-for="EventId" />
 
-        <input type="button" value="Cancel" class="btn btn-default" onclick="location.href='@Url.Action("BookVenue", "Events", new { id = Model.EventId})'" />
+        <input type="button" value="Cancel" class="btn btn-default" onclick="location.href='@Url.Action("Book", "Events", new { id = Model.EventId })'" />
         <input type="submit" value="Book" class="btn btn-default" />
     </form>
 </div>

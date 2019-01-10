@@ -13,6 +13,7 @@ namespace ThAmCo.Events.Services
     public class VenuesClient
     {
         private readonly IConfiguration _configuration;
+
         private readonly IHttpClientFactory _httpClientFactory;
        
         public VenuesClient(IConfiguration configuration, IHttpClientFactory httpClientFactory)
@@ -22,12 +23,13 @@ namespace ThAmCo.Events.Services
 
         }
 
-        public IEnumerable<EventTypesDto> GetEventTypes()
+        public async Task<IEnumerable<EventTypesDto>> GetEventTypes()
         {
-            throw new Exception();
+            string uri = "/api/eventtypes/";
+
+            return await HttpGetAsync<IEnumerable<EventTypesDto>>(uri);
         }
-
-
+        
         public async Task<ReservationGetDto> GetReservation(Event @event)
         {
             string reservationUri = CreateReservationGetString(@event);
@@ -69,7 +71,10 @@ namespace ThAmCo.Events.Services
                 BaseAddress = new System.Uri("http://localhost:23652/")
             };
             client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
-            var url = $"api/Availability?eventType=" + @event.TypeId + "&beginDate=" + @event.Date.ToString("yyyy-MM-dd") + "&endDate=" + @event.Date.Add(@event.Duration.Value).ToString("yyyy-MM-dd");
+            var endDate = @event.Duration.HasValue ? @event.Date.Add(@event.Duration.Value) : @event.Date;
+            var url = $"api/Availability?eventType=" + @event.TypeId
+                + "&beginDate=" + @event.Date.ToString("yyyy-MM-dd")
+                + "&endDate=" + endDate.ToString("yyyy-MM-dd");
             HttpResponseMessage response = client.GetAsync(url).Result;
 
             if (response.IsSuccessStatusCode)

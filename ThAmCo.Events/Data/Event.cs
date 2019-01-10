@@ -26,5 +26,7 @@ namespace ThAmCo.Events.Data
         public string ReservationRef { get; set; }
 
         public List<Staffing> Staffing { get; set; }
+
+        public bool IsActive { get; set; } = true;
     }
 }

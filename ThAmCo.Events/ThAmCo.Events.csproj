@@ -18,6 +18,9 @@
     <Content Update="Views\Events\BookVenuePost.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
+    <Content Update="Views\Events\GuestList.cshtml">
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </Content>
     <Content Update="Views\Events\Staffing.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>

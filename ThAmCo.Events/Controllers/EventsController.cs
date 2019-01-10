@@ -15,11 +15,15 @@ namespace ThAmCo.Events.Controllers
     public class EventsController : Controller
     {
         private readonly EventsDbContext _context;
+
+        private readonly EventsDataAccess _dataAccess;
+
         private readonly VenuesClient _venuesClient;
 
         public EventsController(EventsDbContext context, VenuesClient venuesClient)
         {
             _context = context;
+            _dataAccess = new EventsDataAccess(context);
             _venuesClient = venuesClient;
         }
 
@@ -27,22 +31,23 @@ namespace ThAmCo.Events.Controllers
         public async Task<IActionResult> Index()
         {
             
-            return View(await _context.Events.Include(b => b.Bookings)
+            return View(await _dataAccess.GetEvents()
+                .Include(b => b.Bookings)
                 .Include(e => e.Staffing)
                 .ThenInclude(s => s.Staff)
                 .ToListAsync());
         }
 
         // GET: Events/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Events
+            var @event = await _dataAccess.GetEvents()
+                .Include(b => b.Bookings)
+                .ThenInclude(b => b.Customer)
+                .Include(e => e.Staffing)
+                .ThenInclude(s => s.Staff)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (@event == null)
             {
                 return NotFound();
@@ -52,19 +57,45 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Events/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var eventTypes = await _venuesClient.GetEventTypes();
+
+            var viewModel = new CreateEventViewModel {
+                EventTypes = eventTypes
+            };
+
+            return View(viewModel);
         }
-        // GET: Events/Book
-        public async Task<IActionResult> Book(int? id)
+
+        // POST: Events/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Title,Date,Duration,TypeId")] CreateEventViewModel viewModel)
         {
-            if (id == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
+                var @event = new Event
+                {
+                    Title = viewModel.Title,
+                    Date = viewModel.Date,
+                    Duration = viewModel.Duration,
+                    TypeId = viewModel.TypeId
+                };
+
+                _context.Add(@event);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
             }
 
-            var @event = await _context.Events.FindAsync(id);
+            return BadRequest();
+        }
+
+        // GET: Events/Book
+        public async Task<IActionResult> Book(int id)
+        {
+            var @event = await _dataAccess.GetEvents().FirstOrDefaultAsync(e => e.Id == id);
 
             if (@event == null)
             {
@@ -85,7 +116,7 @@ namespace ThAmCo.Events.Controllers
 
         public async Task<IActionResult> BookVenuePost([FromQuery] int eventId, [FromQuery] string venueCode, [FromQuery] string venueName)
         {
-            Event @event = await _context.Events.FindAsync(eventId);
+            Event @event = await _dataAccess.GetEvents().FirstOrDefaultAsync(e => e.Id == eventId);
 
             if (@event == null)
             {
@@ -111,7 +142,7 @@ namespace ThAmCo.Events.Controllers
             {
                 try
                 {
-                    var @event = await _context.Events.FindAsync(postVenue.EventId);
+                    var @event = await _dataAccess.GetEvents().FirstOrDefaultAsync(e => e.Id == postVenue.EventId);
                     if (@event == null)
                     {
                         return NotFound();
@@ -155,32 +186,11 @@ namespace ThAmCo.Events.Controllers
             return View(postVenue);
         }
 
-        
-        // POST: Events/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Date,Duration,TypeId")] Event @event)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(@event);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(@event);
-        }
-
         // GET: Events/Edit/5
-        public async Task<IActionResult> Edit(int? id )
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var @event = await _dataAccess.GetEvents().FirstOrDefaultAsync(e => e.Id == id);
 
-            var @event = await _context.Events.FindAsync(id);
             if (@event == null)
             {
                 return NotFound();
@@ -197,12 +207,11 @@ namespace ThAmCo.Events.Controllers
                 VenueCode = @event.VenueName
             };
             HttpResponseMessage response = await client.PostAsJsonAsync("api/Availabilities", reservation);
+
             return View(@event);
         }
 
         // POST: Events/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Date,Duration,TypeId")] Event @event)
@@ -236,15 +245,11 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Events/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var @event = await _context.Events
+            var @event = await _dataAccess.GetEvents()
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (@event == null)
             {
                 return NotFound();
@@ -258,25 +263,51 @@ namespace ThAmCo.Events.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var @event = await _context.Events.FindAsync(id);
-            _context.Events.Remove(@event);
+            var @event = await _dataAccess.GetEvents().FirstOrDefaultAsync(e => e.Id == id);
+
+            _context.Remove(@event);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Staffing(int id)
         {
-            var @event = await _context.Events
+            var @event = await _dataAccess.GetEvents()
                 .Include(e => e.Staffing)
                 .ThenInclude(s => s.Staff)
+                .Include(e => e.Bookings)
+                .ThenInclude(b => b.Customer)
                 .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            return View(@event);
+        }
+
+        public async Task<IActionResult> GuestList(int id)
+        {
+            var @event = await _dataAccess.GetEvents()
+                .Include(e => e.Staffing)
+                .ThenInclude(s => s.Staff)
+                .Include(e => e.Bookings)
+                .ThenInclude(b => b.Customer)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
 
             return View(@event);
         }
 
         private bool EventExists(int id)
         {
-            return _context.Events.Any(e => e.Id == id);
+            return _dataAccess.GetEvents().Any(e => e.Id == id);
         }
     }
 }

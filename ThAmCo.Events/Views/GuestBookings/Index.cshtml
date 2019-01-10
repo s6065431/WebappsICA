@@ -39,7 +39,7 @@
             <td>
                 @Html.ActionLink("Edit", "Edit", new {  id= item.CustomerId, Bookings = item.EventId }) |
                 @Html.ActionLink("Details", "Details", new { id = item.CustomerId, Bookings = item.EventId }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.CustomerId, Bookings = item.EventId })
+                @Html.ActionLink("Delete", "Delete", new { customerId = item.CustomerId, eventId = item.EventId })
             </td>
         </tr>
 }

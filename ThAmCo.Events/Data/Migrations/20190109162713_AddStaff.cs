@@ -7,19 +7,6 @@ namespace ThAmCo.Events.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.AddColumn<string>(
-            //    name: "ReservationRef",
-            //    schema: "thamco.events",
-            //    table: "Events",
-            //    maxLength: 13,
-            //    nullable: true);
-
-            //migrationBuilder.AddColumn<string>(
-            //    name: "VenueName",
-            //    schema: "thamco.events",
-            //    table: "Events",
-            //    nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "Staff",
                 schema: "thamco.events",

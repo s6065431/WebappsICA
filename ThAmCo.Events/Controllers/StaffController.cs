@@ -25,15 +25,14 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Staffs/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var staff = await _context.Staff
+                .Include(s => s.Staffing)
+                .ThenInclude(s => s.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (staff == null)
             {
                 return NotFound();
@@ -65,14 +64,10 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Staffs/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var staff = await _context.Staff.FindAsync(id);
+
             if (staff == null)
             {
                 return NotFound();

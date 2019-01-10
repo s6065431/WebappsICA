@@ -19,8 +19,10 @@
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
-
-            <th></th>
+                
+            <th>
+                   
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -43,8 +45,18 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            var text = "";
+
             if ('@Model.Staffing.All(s => !s.Staff.FirstAidQualified)' == 'True') {
-                $('#error-alert').html('@Model.Title Has No First Aider').show();
+                text += 'First aider required. ';
+            }
+
+            if ('@(Model.Staffing.Count * 10 < Model.Bookings.Count)' == 'True') {
+                text += ' There is not enough staff.';
+            }
+
+            if (text.length > 0) {
+                $('#error-alert').html(text).show();
             }
         });
     </script>

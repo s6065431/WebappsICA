@@ -1,0 +1,38 @@
+﻿@model ThAmCo.Events.Data.Event
+
+@{
+    ViewData["Title"] = "Guest List";
+}
+
+<h2>@Model.Title Guest List (Total: @Model.Bookings.Count)</h2>
+
+<div class="collapse alert alert-danger" id="error-alert"></div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Customer
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+                
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Bookings) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Event.Title)
+                </td>
+                <td>
+                    @Html.ActionLink("Delete", "Delete", "GuestBookings", new { eventId = item.EventId, customerId = item.CustomerId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -11,32 +11,32 @@ namespace ThAmCo.Events.Controllers
 {
     public class GuestBookingsController : Controller
     {
+        private readonly EventsDataAccess _dataAccess;
+
         private readonly EventsDbContext _context;
 
         public GuestBookingsController(EventsDbContext context)
         {
             _context = context;
+            _dataAccess = new EventsDataAccess(context);
         }
 
         // GET: GuestBookings
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? eventId)
         {
-            var eventsDbContext = _context.Guests.Include(g => g.Customer).Include(g => g.Event);
+            var eventsDbContext = _context.Guests.Include(g => g.Customer).Include(g => g.Event).Where(g => eventId == null || g.EventId == eventId);
+
             return View(await eventsDbContext.ToListAsync());
         }
 
         // GET: GuestBookings/Details/5
-        public async Task<IActionResult> Details(int? id, int? Bookings)
+        public async Task<IActionResult> Details(int customerId, int eventId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var guestBooking = await _context.Guests
                 .Include(g => g.Customer)
                 .Include(g => g.Event)
-                .FirstOrDefaultAsync(m => m.CustomerId == id);
+                .FirstOrDefaultAsync(m => m.CustomerId == customerId && m.EventId == eventId);
+
             if (guestBooking == null)
             {
                 return NotFound();
@@ -48,14 +48,12 @@ namespace ThAmCo.Events.Controllers
         // GET: GuestBookings/Create
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email");
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
+            ViewData["CustomerId"] = new SelectList(_context.Customers.Where(c => c.FirstName != "anon"), "Id", "Email");
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title");
             return View();
         }
 
         // POST: GuestBookings/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CustomerId,EventId,Attended")] GuestBooking guestBooking)
@@ -66,32 +64,26 @@ namespace ThAmCo.Events.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers.Where(c => c.FirstName != "anon"), "Id", "Email", guestBooking.CustomerId);
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title", guestBooking.EventId);
             return View(guestBooking);
         }
 
         // GET: GuestBookings/Edit/5
-        public async Task<IActionResult> Edit(int? id, int? Bookings)
+        public async Task<IActionResult> Edit(int eventId, int customerId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var guestBooking = await _context.Guests.FindAsync(id, Bookings);
+            var guestBooking = await _context.Guests.FindAsync(eventId, customerId);
             if (guestBooking == null)
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
+            ViewData["CustomerId"] = new SelectList(_context.Customers.Where(c => c.FirstName != "anon"), "Id", "Email", guestBooking.CustomerId);
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title", guestBooking.EventId);
             return View(guestBooking);
         }
 
         // POST: GuestBookings/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("CustomerId,EventId,Attended")] GuestBooking guestBooking)
@@ -122,22 +114,18 @@ namespace ThAmCo.Events.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Email", guestBooking.CustomerId);
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", guestBooking.EventId);
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title", guestBooking.EventId);
             return View(guestBooking);
         }
 
         // GET: GuestBookings/Delete/5
-        public async Task<IActionResult> Delete(int? id, int? Bookings)
+        public async Task<IActionResult> Delete(int customerId, int eventId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var guestBooking = await _context.Guests
                 .Include(g => g.Customer)
                 .Include(g => g.Event)
-                .FirstOrDefaultAsync(m => m.CustomerId == id);
+                .FirstOrDefaultAsync(m => m.Event.IsActive && m.CustomerId == customerId && m.EventId == eventId);
+
             if (guestBooking == null)
             {
                 return NotFound();
@@ -149,9 +137,9 @@ namespace ThAmCo.Events.Controllers
         // POST: GuestBookings/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int eventId)
+        public async Task<IActionResult> DeleteConfirmed(int customerId, int eventId)
         {
-            var guestBooking = await _context.Guests.FindAsync(id, eventId);
+            var guestBooking = await _context.Guests.FindAsync(customerId, eventId);
             _context.Guests.Remove(guestBooking);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -11,28 +11,30 @@ namespace ThAmCo.Events.Controllers
 {
     public class StaffingController : Controller
     {
+        private readonly EventsDataAccess _dataAccess;
+
         private readonly EventsDbContext _context;
 
         public StaffingController(EventsDbContext context)
         {
             _context = context;
+            _dataAccess = new EventsDataAccess(context);
         }
 
         // GET: Staffings
         public async Task<IActionResult> Index(int? eventId)
         {
-            var eventsDbContext = _context.Staffing.Include(s => s.Event)
+            var eventsDbContext = _context.Staffing
+                .Include(s => s.Event)
                 .Include(s => s.Staff)
-                .Where(s => eventId == null ||  s.EventId == eventId);
+                .Where(s => s.Event.IsActive && eventId == null ||  s.EventId == eventId);
             return View(await eventsDbContext.ToListAsync());
         }
-
-
 
         // GET: Staffings/Create
         public IActionResult Create()
         {
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title");
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title");
             ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Id");
             return View();
         }
@@ -50,7 +52,7 @@ namespace ThAmCo.Events.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Title", staffing.EventId);
+            ViewData["EventId"] = new SelectList(_dataAccess.GetEvents(), "Id", "Title", staffing.EventId);
             ViewData["StaffId"] = new SelectList(_context.Staff, "Id", "Id", staffing.StaffId);
             return View(staffing);
         }

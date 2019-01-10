@@ -21,8 +21,6 @@ namespace ThAmCo.Events.Models
         [Range(1, Int32.MaxValue)]
         public int Capacity { get; set; }
 
-        public List<Suitability> SuitableEventTypes { get; set; }
-
         public List<AvailabilityDto> AvailableDates { get; set; }
     }
 

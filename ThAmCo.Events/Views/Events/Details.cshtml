@@ -4,11 +4,10 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+<h2>@Model.Title Details</h2>
 
 
 <div>
-    <h4>Event</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -35,8 +34,68 @@
         <dd>
             @Html.DisplayFor(model => model.TypeId)
         </dd>
-
     </dl>
+
+    <hr />
+
+    <div>
+    <h3>Guest List (Total: @Model.Bookings.Count)</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Customer
+                    </th>
+
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Bookings)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Customer.FullName)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Delete", "Delete", "GuestBookings", new { eventId = item.EventId, customerId = item.CustomerId })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <hr />
+
+    <div>
+        <h3>Staffing</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Staff
+                    </th>
+
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Staffing)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Staff.FullName)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Delete", "Delete", "Staffing", new { eventId = item.EventId, staffId = item.StaffId })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |

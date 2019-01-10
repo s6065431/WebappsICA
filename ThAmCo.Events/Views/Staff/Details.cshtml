@@ -30,6 +30,67 @@
         </dd>
     </dl>
 </div>
+
+<div>
+    <h4>Upcoming Events</h4>
+    @{
+        var e = Model.Staffing.Where(s => s.Event.Date >= DateTime.Now).Select(s => s.Event);
+
+        if (e.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <td>Title</td>
+                        <td>Date</td>
+                        <td>Duration</td>
+                        <td>TypeId</td>
+                        <td>VenueName</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in e)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Date)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Duration)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.TypeId)
+                            </td>
+
+                            <td>
+                                @if (item.VenueName == null)
+                                {
+                                    <p>No Venue Booked</p>
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.VenueName)
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        } else
+        {
+            <p>No upcoming events</p>
+        }
+    }
+</div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

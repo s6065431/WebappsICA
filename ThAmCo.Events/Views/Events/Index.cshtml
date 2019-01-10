@@ -70,17 +70,20 @@
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
                 <a asp-action="Book" asp-route-id="@item.Id">Book Venue</a> |
-                <a asp-action="Staffing" asp-route-id="@item.Id">Staffing for Event</a>
+                <a asp-action="Staffing" asp-route-id="@item.Id">Staffing for Event</a> |
+                <a asp-action="GuestList" asp-route-id="@item.Id">Guest List</a>
             </td>
         </tr>
         <tr>
             <td>
-                <div class="collapse alert alert-danger" id='error-alert-@item.Id'></div>
+                <div class="collapse alert alert-danger" id='error-firstaid-@item.Id'></div>
             </td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
+            <td>
+                <div class="collapse alert alert-danger" id='error-staffcount-@item.Id'></div>
+            </td>
             <td></td>
             <td></td>
         </tr>
@@ -90,14 +93,23 @@
 
 @section Scripts {
     <script>
-        function warn(eId) {
-            $('#error-alert-' + eId).text("First aider required!").show();
+        function warnFirstAid(eId) {
+            $('#error-firstaid-' + eId).text("First aider required!").show();
+        }
+
+        function warnStaffCount(eId) {
+            $('#error-staffcount-' + eId).text("Not enough staff!").show();
         }
 
         $(document).ready(function () {
             var eId = '@String.Join(",", Model.Where(e => e.Staffing.All(s => !s.Staff.FirstAidQualified)).Select(e => e.Id).ToArray())';
             if (eId != "") {
-                eId.split(",").forEach(warn);
+                eId.split(",").forEach(warnFirstAid);
+            }
+
+            eId = '@String.Join(",", Model.Where(e => (e.Staffing.Count * 10 < e.Bookings.Count)).Select(e => e.Id).ToArray())';
+            if (eId != "") {
+                eId.split(",").forEach(warnStaffCount);
             }
         });
     </script>

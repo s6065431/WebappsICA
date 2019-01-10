@@ -25,12 +25,8 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Customers/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
             var customer = await _context.Customers             
                 .Include(b => b.Bookings)
@@ -52,14 +48,18 @@ namespace ThAmCo.Events.Controllers
         }
 
         // POST: Customers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Surname,FirstName,Email")] Customer customer)
+        public async Task<IActionResult> Create([Bind("Surname,FirstName,Email")] Customer customer)
         {
             if (ModelState.IsValid)
             {
+                if (_context.Customers.Any(c => c.Email == customer.Email))
+                {
+                    ModelState.AddModelError("Email", "Customer with that email already exists");
+
+                    return BadRequest();
+                }
                 _context.Add(customer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -68,24 +68,19 @@ namespace ThAmCo.Events.Controllers
         }
 
         // GET: Customers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var customer = await _context.Customers.FindAsync(id);
+
             if (customer == null)
             {
                 return NotFound();
             }
+
             return View(customer);
         }
 
         // POST: Customers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Surname,FirstName,Email")] Customer customer)
@@ -97,8 +92,16 @@ namespace ThAmCo.Events.Controllers
 
             if (ModelState.IsValid)
             {
+                if (_context.Customers.Any(c => c.Email == customer.Email))
+                {
+                    ModelState.AddModelError("Email", "Customer with that email already exists");
+
+                    return View(customer);
+                }
+
                 try
                 {
+
                     _context.Update(customer);
                     await _context.SaveChangesAsync();
                 }
@@ -142,8 +145,14 @@ namespace ThAmCo.Events.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var customer = await _context.Customers.FindAsync(id);
-            _context.Customers.Remove(customer);
+
+            customer.FirstName = "anon";
+            customer.Surname = "anon";
+            customer.Email = "anon";
+
+            _context.Customers.Update(customer);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 

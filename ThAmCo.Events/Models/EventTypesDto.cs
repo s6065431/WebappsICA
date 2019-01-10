@@ -14,6 +14,5 @@ namespace ThAmCo.Events.Models
         [Required]
         public string Title { get; set; }
 
-        public List<Suitability> SuitableVenues { get; set; }
     }
 }
