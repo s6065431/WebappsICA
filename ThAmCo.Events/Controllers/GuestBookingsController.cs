@@ -86,12 +86,9 @@ namespace ThAmCo.Events.Controllers
         // POST: GuestBookings/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,EventId,Attended")] GuestBooking guestBooking)
+        public async Task<IActionResult> Edit([Bind("CustomerId,EventId,Attended")] GuestBooking guestBooking)
         {
-            if (id != guestBooking.CustomerId)
-            {
-                return NotFound();
-            }
+
 
             if (ModelState.IsValid)
             {
